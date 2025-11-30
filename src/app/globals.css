@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-metal-950 text-metal-100 min-h-screen;
+  background-image: radial-gradient(circle at 50% 0%, #0369a1 0%, #020617 100%);
+}
+
+.glass-panel {
+  @apply bg-glass-dark backdrop-blur-md border border-metal-700/50 shadow-glass;
+}
+
+.metal-text {
+  @apply bg-clip-text text-transparent bg-gradient-to-b from-metal-100 to-metal-400;
+}

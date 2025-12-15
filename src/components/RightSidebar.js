@@ -1,9 +1,14 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
+import { useState } from 'react';
+import Link from 'next/link';
 
 export default function RightSidebar() {
     const { data: session } = useSession();
+
+    // Mock state for following status
+    const [followedUsers, setFollowedUsers] = useState({});
 
     const suggestions = [
         { id: 1, username: 'adobexd', subtitle: 'Popular' },
@@ -12,6 +17,13 @@ export default function RightSidebar() {
         { id: 4, username: 'ui_gradient', subtitle: 'New to Instagram' },
         { id: 5, username: 'webdesign_ideas', subtitle: 'Followed by dev_guru' },
     ];
+
+    const toggleFollow = (id) => {
+        setFollowedUsers(prev => ({
+            ...prev,
+            [id]: !prev[id]
+        }));
+    };
 
     if (!session) return null;
 
@@ -40,7 +52,7 @@ export default function RightSidebar() {
             {/* Suggestions Header */}
             <div className="flex items-center justify-between mb-4">
                 <div className="text-ig-secondary font-semibold text-sm">Suggested for you</div>
-                <button className="text-ig-primary hover:text-ig-secondary text-xs font-semibold">See All</button>
+                <Link href="/explore" className="text-ig-primary hover:text-ig-secondary text-xs font-semibold">See All</Link>
             </div>
 
             {/* Suggestions List */}
@@ -57,7 +69,15 @@ export default function RightSidebar() {
                                 <div className="text-xs text-ig-secondary truncate w-32">{user.subtitle}</div>
                             </div>
                         </div>
-                        <button className="text-ig-link hover:text-ig-primary text-xs font-semibold">Follow</button>
+                        <button
+                            onClick={() => toggleFollow(user.id)}
+                            className={`text-xs font-semibold transition-colors ${followedUsers[user.id]
+                                    ? 'text-ig-secondary'
+                                    : 'text-ig-link hover:text-ig-primary'
+                                }`}
+                        >
+                            {followedUsers[user.id] ? 'Following' : 'Follow'}
+                        </button>
                     </div>
                 ))}
             </div>
@@ -67,7 +87,7 @@ export default function RightSidebar() {
                 <p className="flex flex-wrap gap-1 opacity-50">
                     <span>About</span> &middot; <span>Help</span> &middot; <span>Press</span> &middot; <span>API</span> &middot; <span>Jobs</span> &middot; <span>Privacy</span> &middot; <span>Terms</span>
                 </p>
-                <p className="opacity-50">© 2025 INSTAGRAM CLONE FROM META</p>
+                <p className="opacity-50">© 2025 CONNECTX FROM META</p>
             </div>
         </div>
     );

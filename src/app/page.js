@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import PostCard from '@/components/PostCard';
+import Stories from '@/components/Stories';
+import { FaRegUser } from 'react-icons/fa';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 
@@ -49,12 +51,18 @@ export default function Home() {
         </Link>
       </div>
 
+      <Stories />
+
       {posts.length > 0 ? (
         posts.map((post) => <PostCard key={post._id} post={post} />)
       ) : (
-        <div className="glass-panel rounded-xl p-10 text-center">
-          <p className="text-metal-400 mb-4">No posts from people you follow.</p>
-          <Link href="/explore" className="px-6 py-2 bg-metal-800 hover:bg-metal-700 border border-metal-600 text-metal-200 rounded-full text-sm font-medium transition-all inline-block">
+        <div className="flex flex-col items-center justify-center py-10 text-center">
+          <div className="w-24 h-24 rounded-full border-2 border-ig-stroke flex items-center justify-center mb-4">
+            <FaRegUser size={48} className="text-ig-secondary" />
+          </div>
+          <p className="text-ig-primary font-semibold mb-2">Welcome to Instagram</p>
+          <p className="text-ig-secondary text-sm mb-6">When you follow people, you'll see the photos and videos they post here.</p>
+          <Link href="/explore" className="text-ig-link font-semibold text-sm hover:text-white transition-colors">
             Find people to follow
           </Link>
         </div>

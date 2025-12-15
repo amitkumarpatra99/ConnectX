@@ -8,30 +8,34 @@ module.exports = {
     theme: {
         extend: {
             colors: {
+                // Instagram Dark Mode Palette
+                'ig-black': '#000000',
+                'ig-dark': '#121212',       // Elevated surfaces / cards
+                'ig-elevated': '#262626',   // Hover states / search bars
+                'ig-stroke': '#363636',     // Borders / Separators
+                'ig-primary': '#f5f5f5',    // Main text
+                'ig-secondary': '#a8a8a8',  // Secondary text / subtitles
+                'ig-link': '#0095f6',       // Blue links / buttons
+                'ig-link-hover': '#1877f2',
+                'ig-red': '#ed4956',        // Notifications / Likes
+
+                // Retaining some metal colors for legacy support if needed, but overriding primarily
                 metal: {
-                    50: '#f0f9ff', // Sky 50
+                    50: '#f0f9ff',
                     100: '#e0f2fe',
                     200: '#bae6fd',
                     300: '#7dd3fc',
                     400: '#38bdf8',
-                    500: '#0ea5e9', // Sky 500
+                    500: '#0ea5e9',
                     600: '#0284c7',
-                    700: '#0369a1', // Deep Blue
+                    700: '#0369a1',
                     800: '#075985',
-                    900: '#0c4a6e', // Dark Blue
-                    950: '#082f49', // Midnight Blue
+                    900: '#0c4a6e',
+                    950: '#000000', // Override to black
                 },
-                primary: '#3b82f6', // Blue
             },
             backgroundImage: {
-                'metal-gradient': 'linear-gradient(135deg, #e0f2fe 0%, #ffffff 50%, #e0f2fe 100%)',
-                'metal-dark': 'linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0c4a6e 100%)', // Ocean Blue Gradient
-                'glass': 'linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%)',
-                'glass-dark': 'linear-gradient(135deg, rgba(12, 74, 110, 0.6) 0%, rgba(8, 47, 73, 0.6) 100%)', // Blue Glass
-            },
-            boxShadow: {
-                'glass': '0 4px 30px rgba(0, 0, 0, 0.2)',
-                'metal': 'inset 0 1px 0 0 rgba(255, 255, 255, 0.1)',
+                'ig-gradient': 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
             },
         },
     },

@@ -3,14 +3,27 @@
 @tailwind utilities;
 
 body {
-  @apply bg-metal-950 text-metal-100 min-h-screen;
-  background-image: radial-gradient(circle at 50% 0%, #0369a1 0%, #020617 100%);
+  @apply bg-ig-black text-ig-primary min-h-screen overflow-x-hidden;
 }
 
-.glass-panel {
-  @apply bg-glass-dark backdrop-blur-md border border-metal-700/50 shadow-glass;
+/* Scrollbar hiding for stories/suggestions */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
 }
 
-.metal-text {
-  @apply bg-clip-text text-transparent bg-gradient-to-b from-metal-100 to-metal-400;
+/* Instagram-like Utilities */
+.ig-button-primary {
+    @apply bg-ig-link text-white font-semibold py-1.5 px-4 rounded-lg hover:bg-ig-link-hover transition-colors text-sm;
+}
+
+.ig-button-secondary {
+    @apply bg-ig-elevated text-ig-primary font-semibold py-1.5 px-4 rounded-lg hover:bg-zinc-700 transition-colors text-sm;
+}
+
+.ig-input {
+    @apply bg-ig-elevated text-ig-primary placeholder-ig-secondary px-4 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-ig-stroke w-full text-sm;
 }

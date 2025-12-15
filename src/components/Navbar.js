@@ -34,7 +34,7 @@ export default function Navbar() {
         <nav className="sticky top-0 z-50 glass-panel border-b-0 mb-8">
             <div className="max-w-6xl mx-auto px-4 h-16 flex justify-between items-center">
                 <Link href="/" className="text-2xl font-bold metal-text hover:opacity-80 transition-opacity tracking-wide">
-                    SocialApp
+                    ConnectX
                 </Link>
 
                 {session && (

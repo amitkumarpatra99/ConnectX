@@ -1,5 +1,5 @@
 # 🚀 ConnectX  
-A modern, fast, and interactive social media platform built using **Next.js**, **MongoDB**, **NextAuth**, and **Tailwind CSS**.  
+A Modern, fast, and interactive social media platform built using **Next.js**, **MongoDB**, **NextAuth**, and **Tailwind CSS**.  
 ConnectX allows users to connect, share, chat, and explore a clean social experience with a high-performance UI.
 
 ---
@@ -42,7 +42,5 @@ ConnectX allows users to connect, share, chat, and explore a clean social experi
 - **Cloudinary** for media  
 - **Socket.io (optional)** for chat  
 - **Vercel** for deployment  
-
----
 
 

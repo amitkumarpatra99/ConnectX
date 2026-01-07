@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { FaHeart, FaRegHeart, FaRegComment, FaRegPaperPlane, FaRegBookmark, FaBookmark } from 'react-icons/fa';
 import { BsThreeDots } from 'react-icons/bs';
 
@@ -95,16 +96,20 @@ export default function PostCard({ post }) {
             {/* Header */}
             <div className="flex items-center justify-between p-3">
                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-ig-elevated overflow-hidden border border-ig-stroke relative">
-                        {post.author?.image ? (
-                            <Image src={post.author.image} alt={post.author.name} fill className="object-cover" />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center text-xs font-bold text-ig-secondary">
-                                {post.author?.name?.[0]?.toUpperCase()}
-                            </div>
-                        )}
-                    </div>
-                    <div className="text-sm font-semibold">{post.author?.name}</div>
+                    <Link href={`/profile/${post.author?._id}`} className="block">
+                        <div className="w-8 h-8 rounded-full bg-ig-elevated overflow-hidden border border-ig-stroke relative">
+                            {post.author?.image ? (
+                                <Image src={post.author.image} alt={post.author.name} fill className="object-cover" />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-xs font-bold text-ig-secondary">
+                                    {post.author?.name?.[0]?.toUpperCase()}
+                                </div>
+                            )}
+                        </div>
+                    </Link>
+                    <Link href={`/profile/${post.author?._id}`} className="text-sm font-semibold hover:underline">
+                        {post.author?.name}
+                    </Link>
                     <span className="text-ig-secondary text-xs">• {formatDistanceToNow(new Date(post.createdAt))}</span>
                 </div>
                 <button className="text-ig-primary hover:text-ig-secondary">

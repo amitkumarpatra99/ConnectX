@@ -13,7 +13,7 @@ export async function POST(req, { params }) {
 
         await dbConnect();
 
-        // Await params before accessing properties (Next.js 15+ requirement)
+        // Await params before using them (Next.js 15+ convention for dynamic routes)
         const { id: targetUserId } = await params;
         const currentUserId = session.user.id;
 
@@ -21,10 +21,10 @@ export async function POST(req, { params }) {
             return NextResponse.json({ message: 'Cannot follow yourself' }, { status: 400 });
         }
 
-        const currentUser = await User.findById(currentUserId);
         const targetUser = await User.findById(targetUserId);
+        const currentUser = await User.findById(currentUserId);
 
-        if (!targetUser) {
+        if (!targetUser || !currentUser) {
             return NextResponse.json({ message: 'User not found' }, { status: 404 });
         }
 
@@ -32,16 +32,15 @@ export async function POST(req, { params }) {
 
         if (isFollowing) {
             // Unfollow
-            currentUser.following = currentUser.following.filter(id => id.toString() !== targetUserId);
-            targetUser.followers = targetUser.followers.filter(id => id.toString() !== currentUserId);
+            currentUser.following.pull(targetUserId);
+            targetUser.followers.pull(currentUserId);
         } else {
             // Follow
             currentUser.following.push(targetUserId);
             targetUser.followers.push(currentUserId);
         }
 
-        await currentUser.save();
-        await targetUser.save();
+        await Promise.all([currentUser.save(), targetUser.save()]);
 
         return NextResponse.json({
             isFollowing: !isFollowing,

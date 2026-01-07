@@ -6,7 +6,7 @@ import MobileHeader from '@/components/MobileHeader';
 import AuthProvider from '@/components/AuthProvider';
 
 export const metadata = {
-  title: 'Instagram Clone',
+  title: 'ConnectX',
   description: 'A full stack social media app built with Next.js',
 };
 

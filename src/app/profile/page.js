@@ -5,13 +5,13 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import PostCard from '@/components/PostCard';
 import Image from 'next/image';
+import { FaThLarge, FaBookmark, FaEdit } from 'react-icons/fa';
 
 export default function Profile() {
     const { data: session, status } = useSession();
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({ followers: 0, following: 0 });
-
     const [activeTab, setActiveTab] = useState('posts');
     const [savedPosts, setSavedPosts] = useState([]);
 
@@ -19,30 +19,21 @@ export default function Profile() {
         if (status === 'authenticated' && session?.user?.id) {
             const fetchData = async () => {
                 try {
-                    // Fetch posts
                     const postsRes = await fetch(`/api/posts?author=${session.user.id}`);
                     const postsData = await postsRes.json();
                     setPosts(postsData);
 
-                    // Fetch user stats and saved posts
                     const userRes = await fetch(`/api/users/${session.user.id}`);
                     if (userRes.ok) {
                         const userData = await userRes.json();
                         setStats({
                             followers: userData.followers?.length || 0,
-                            following: userData.following?.length || 0
+                            following: userData.following?.length || 0,
                         });
-
-                        // Fetch full saved posts details
                         if (userData.savedPosts?.length > 0) {
-                            // We need an endpoint to fetch specific posts by IDs, or filter client side if we had all
-                            // Let's assume we can fetch them. For now, let's just fetch all and filter (inefficient but works for demo)
-                            // Better: Add endpoint support.
-                            // Let's create a quick helper or just fetch all global and filter.
                             const allPostsRes = await fetch('/api/posts');
                             const allPosts = await allPostsRes.json();
-                            const saved = allPosts.filter(p => userData.savedPosts.includes(p._id));
-                            setSavedPosts(saved);
+                            setSavedPosts(allPosts.filter(p => userData.savedPosts.includes(p._id)));
                         }
                     }
                 } catch (error) {
@@ -58,100 +49,138 @@ export default function Profile() {
     }, [status, session]);
 
     if (status === 'loading' || loading) return (
-        <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="max-w-2xl mx-auto space-y-4 animate-pulse">
+            <div className="glass rounded-3xl p-8 flex flex-col items-center">
+                <div className="skeleton w-24 h-24 rounded-full mb-4" />
+                <div className="skeleton h-5 w-36 rounded mb-2" />
+                <div className="skeleton h-3 w-48 rounded mb-6" />
+                <div className="flex gap-10">
+                    {[...Array(3)].map((_, i) => (
+                        <div key={i} className="text-center space-y-1">
+                            <div className="skeleton h-6 w-10 rounded mx-auto" />
+                            <div className="skeleton h-3 w-14 rounded" />
+                        </div>
+                    ))}
+                </div>
+            </div>
         </div>
     );
 
     if (!session) {
-        return <div className="text-center py-20 text-slate-600">Please login to view your profile.</div>;
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
+                <div className="glass rounded-2xl p-10">
+                    <p className="text-ig-primary font-semibold mb-2">Not logged in</p>
+                    <p className="text-ig-secondary text-sm mb-5">Please sign in to view your profile.</p>
+                    <Link href="/login" className="cx-button text-sm">Sign In</Link>
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="max-w-2xl mx-auto">
-            <div className="glass-panel p-8 rounded-2xl mb-8 flex flex-col items-center text-center relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-metal-800/50 to-transparent pointer-events-none"></div>
-                <div className="relative z-10 w-24 h-24 rounded-full overflow-hidden bg-metal-800 mb-4 border-4 border-metal-700 shadow-xl">
-                    {session.user.image ? (
-                        <Image
-                            src={session.user.image}
-                            alt={session.user.name || 'User'}
-                            fill
-                            className="object-cover"
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-metal-700 to-metal-900 text-metal-100 text-4xl font-bold">
-                            {session.user.name?.[0]?.toUpperCase()}
+        <div className="max-w-2xl mx-auto animate-fade-in">
+            {/* Hero Card */}
+            <div className="glass rounded-3xl mb-6 overflow-hidden shadow-card">
+                {/* Gradient banner */}
+                <div className="h-24 bg-cx-gradient opacity-60 relative">
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-ig-black/80" />
+                </div>
+
+                <div className="px-6 pb-6 -mt-12 relative">
+                    {/* Avatar */}
+                    <div className="relative w-24 h-24 mb-4">
+                        <div className="absolute inset-0 rounded-full bg-cx-gradient p-[3px]">
+                            <div className="w-full h-full rounded-full bg-ig-black p-[2px]">
+                                <div className="w-full h-full rounded-full overflow-hidden bg-ig-elevated relative">
+                                    {session.user.image ? (
+                                        <Image
+                                            src={session.user.image}
+                                            alt={session.user.name || 'User'}
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center bg-cx-gradient text-white text-3xl font-bold">
+                                            {session.user.name?.[0]?.toUpperCase()}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                    )}
-                </div>
-                <h1 className="relative z-10 text-2xl font-bold text-metal-100 mb-1">{session.user.name}</h1>
-                <p className="relative z-10 text-metal-400 mb-6">{session.user.email}</p>
+                    </div>
 
-                <div className="relative z-10 flex gap-8 border-t border-metal-700/50 pt-6 w-full justify-center mb-6">
-                    <div className="text-center">
-                        <span className="block text-2xl font-bold text-metal-100">{posts.length}</span>
-                        <span className="text-sm text-metal-500">Posts</span>
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <h1 className="text-xl font-bold text-ig-primary">{session.user.name}</h1>
+                            <p className="text-ig-secondary text-sm">{session.user.email}</p>
+                        </div>
+                        <Link
+                            href="/profile/edit"
+                            className="flex items-center gap-2 px-4 py-2 glass rounded-xl text-sm font-semibold text-ig-secondary hover:text-ig-primary transition-colors mt-2"
+                        >
+                            <FaEdit size={13} /> Edit
+                        </Link>
                     </div>
-                    <div className="text-center">
-                        <span className="block text-2xl font-bold text-metal-100">{stats.followers}</span>
-                        <span className="text-sm text-metal-500">Followers</span>
-                    </div>
-                    <div className="text-center">
-                        <span className="block text-2xl font-bold text-metal-100">{stats.following}</span>
-                        <span className="text-sm text-metal-500">Following</span>
+
+                    {/* Stats */}
+                    <div className="flex gap-8 mt-5 pt-5 border-t border-white/[0.06]">
+                        {[
+                            { label: 'Posts', value: posts.length },
+                            { label: 'Followers', value: stats.followers },
+                            { label: 'Following', value: stats.following },
+                        ].map(({ label, value }) => (
+                            <div key={label} className="text-center">
+                                <span className="block text-xl font-bold text-ig-primary">{value.toLocaleString()}</span>
+                                <span className="text-xs text-ig-secondary">{label}</span>
+                            </div>
+                        ))}
                     </div>
                 </div>
-
-                <Link href="/profile/edit" className="px-6 py-2 bg-metal-800 hover:bg-metal-700 border border-metal-600 text-metal-200 rounded-full text-sm font-medium transition-all relative z-10">
-                    Edit Profile
-                </Link>
             </div>
 
-            <div className="flex border-b border-metal-700/50 mb-6">
-                <button
-                    onClick={() => setActiveTab('posts')}
-                    className={`flex-1 py-3 text-sm font-medium transition-colors relative ${activeTab === 'posts' ? 'text-blue-400' : 'text-metal-400 hover:text-metal-200'
+            {/* Tabs */}
+            <div className="flex border-b border-white/[0.06] mb-5">
+                {[
+                    { id: 'posts', label: 'POSTS', icon: <FaThLarge size={13} /> },
+                    { id: 'saved', label: 'SAVED', icon: <FaBookmark size={13} /> },
+                ].map((tab) => (
+                    <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex-1 py-3 text-xs font-bold transition-colors relative flex items-center justify-center gap-1.5 ${
+                            activeTab === tab.id ? 'text-ig-primary' : 'text-ig-secondary hover:text-ig-primary'
                         }`}
-                >
-                    <span className="flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-                        </svg>
-                        POSTS
-                    </span>
-                    {activeTab === 'posts' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"></div>}
-                </button>
-                <button
-                    onClick={() => setActiveTab('saved')}
-                    className={`flex-1 py-3 text-sm font-medium transition-colors relative ${activeTab === 'saved' ? 'text-blue-400' : 'text-metal-400 hover:text-metal-200'
-                        }`}
-                >
-                    <span className="flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
-                        </svg>
-                        SAVED
-                    </span>
-                    {activeTab === 'saved' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"></div>}
-                </button>
+                    >
+                        {tab.icon} {tab.label}
+                        {activeTab === tab.id && (
+                            <div className="absolute bottom-0 left-0 w-full h-[2px] bg-cx-gradient rounded-t-full" />
+                        )}
+                    </button>
+                ))}
             </div>
 
-            <div className="space-y-6">
+            {/* Content */}
+            <div className="space-y-4 animate-fade-in">
                 {activeTab === 'posts' ? (
                     posts.length > 0 ? (
                         posts.map((post) => <PostCard key={post._id} post={post} />)
                     ) : (
-                        <div className="glass-panel rounded-xl p-10 text-center">
-                            <p className="text-metal-400">You haven't posted anything yet.</p>
+                        <div className="glass rounded-2xl p-12 text-center">
+                            <FaThLarge size={32} className="text-ig-secondary opacity-40 mx-auto mb-3" />
+                            <p className="text-ig-primary font-semibold">No posts yet</p>
+                            <p className="text-ig-secondary text-sm mt-1">Share your first moment with the world.</p>
+                            <Link href="/create-post" className="cx-button text-sm inline-block mt-5">Create Post</Link>
                         </div>
                     )
                 ) : (
                     savedPosts.length > 0 ? (
                         savedPosts.map((post) => <PostCard key={post._id} post={post} />)
                     ) : (
-                        <div className="glass-panel rounded-xl p-10 text-center">
-                            <p className="text-metal-400">No saved posts yet.</p>
+                        <div className="glass rounded-2xl p-12 text-center">
+                            <FaBookmark size={32} className="text-ig-secondary opacity-40 mx-auto mb-3" />
+                            <p className="text-ig-primary font-semibold">No saved posts</p>
+                            <p className="text-ig-secondary text-sm mt-1">Posts you save will appear here.</p>
                         </div>
                     )
                 )}

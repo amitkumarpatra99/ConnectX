@@ -2,28 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Google Font ───────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
 body {
   @apply bg-ig-black text-ig-primary min-h-screen overflow-x-hidden;
+  font-family: 'Inter', sans-serif;
 }
 
-/* Scrollbar hiding for stories/suggestions */
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
-}
-.scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+/* ── Scrollbar ──────────────────────────────────────────── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #363636; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #4f4f4f; }
+
+/* ── Glassmorphism ──────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Instagram-like Utilities */
+.glass-dark {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Legacy panel class for existing pages */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Gradient Text ──────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #4f8ef7 0%, #8b5cf6 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Shimmer Skeleton ───────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #1a1a1a 25%,
+    #262626 50%,
+    #1a1a1a 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+/* ── Buttons ────────────────────────────────────────────── */
 .ig-button-primary {
-    @apply bg-ig-link text-white font-semibold py-1.5 px-4 rounded-lg hover:bg-ig-link-hover transition-colors text-sm;
+  @apply bg-ig-link text-white font-semibold py-1.5 px-4 rounded-lg hover:bg-ig-link-hover transition-colors text-sm;
 }
 
 .ig-button-secondary {
-    @apply bg-ig-elevated text-ig-primary font-semibold py-1.5 px-4 rounded-lg hover:bg-zinc-700 transition-colors text-sm;
+  @apply bg-ig-elevated text-ig-primary font-semibold py-1.5 px-4 rounded-lg hover:bg-zinc-700 transition-colors text-sm;
 }
 
 .ig-input {
-    @apply bg-ig-elevated text-ig-primary placeholder-ig-secondary px-4 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-ig-stroke w-full text-sm;
+  @apply bg-ig-elevated text-ig-primary placeholder-ig-secondary px-4 py-2 rounded-lg focus:outline-none focus:ring-1 focus:ring-ig-stroke w-full text-sm;
+}
+
+/* ConnectX gradient button */
+.cx-button {
+  background: linear-gradient(135deg, #4f8ef7 0%, #8b5cf6 100%);
+  @apply text-white font-semibold py-2.5 px-6 rounded-xl transition-all duration-200;
+  box-shadow: 0 4px 20px rgba(79, 142, 247, 0.3);
+}
+.cx-button:hover {
+  box-shadow: 0 6px 28px rgba(79, 142, 247, 0.5);
+  transform: translateY(-1px);
+}
+.cx-button:active {
+  transform: translateY(0);
+}
+
+/* ConnectX gradient input */
+.cx-input {
+  @apply bg-white/5 border border-white/10 text-ig-primary placeholder-ig-secondary px-4 py-3 rounded-xl w-full text-sm transition-all duration-200;
+  outline: none;
+}
+.cx-input:focus {
+  border-color: rgba(79, 142, 247, 0.6);
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.1);
+}
+
+/* ── Story Ring ─────────────────────────────────────────── */
+.story-ring {
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  padding: 2px;
+  border-radius: 9999px;
+}
+
+/* ── Active Nav Pill ────────────────────────────────────── */
+.nav-active-pill {
+  background: linear-gradient(135deg, rgba(79,142,247,0.15) 0%, rgba(139,92,246,0.15) 100%);
+  border: 1px solid rgba(79, 142, 247, 0.2);
 }

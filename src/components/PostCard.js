@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
@@ -13,78 +13,77 @@ export default function PostCard({ post }) {
     const [likes, setLikes] = useState(post.likes || []);
     const [comments, setComments] = useState(post.comments || []);
     const [commentText, setCommentText] = useState('');
-    const [isSaved, setIsSaved] = useState(false); // Initial state should be checked from user profile if possible, but for now defaulting false or need to pass in info
+    const [isSaved, setIsSaved] = useState(false);
+    const [likeAnimating, setLikeAnimating] = useState(false);
+    const [lastTap, setLastTap] = useState(0);
 
-    // Check if user has liked
     const isLiked = session && likes.includes(session.user.id);
 
-    // Ideally, we should pass 'saved' status from parent or check against user's saved list.
-    // For now, we'll implement the toggle logic but initial state might be inaccurate until page refresh or better prop passing.
-    // If we want it accurate, we'd need to fetch user details or pass 'isSaved' prop.
-    // Let's assume for this step we want the action working.
+    const triggerLikeAnimation = () => {
+        setLikeAnimating(true);
+        setTimeout(() => setLikeAnimating(false), 400);
+    };
 
     const handleLike = async () => {
         if (!session) return;
-
-        // Optimistic update
+        triggerLikeAnimation();
         const originalLikes = [...likes];
         if (isLiked) {
             setLikes(likes.filter(id => id !== session.user.id));
         } else {
             setLikes([...likes, session.user.id]);
         }
-
         try {
             const res = await fetch(`/api/posts/${post._id}/like`, { method: 'POST' });
             if (!res.ok) {
-                setLikes(originalLikes); // Revert on error
+                setLikes(originalLikes);
             } else {
                 const updatedLikes = await res.json();
                 setLikes(updatedLikes);
             }
-        } catch (error) {
-            setLikes(originalLikes); // Revert
+        } catch {
+            setLikes(originalLikes);
         }
+    };
+
+    const handleDoubleTap = () => {
+        const now = Date.now();
+        if (now - lastTap < 350) {
+            if (!isLiked) handleLike();
+        }
+        setLastTap(now);
     };
 
     const handleSave = async () => {
         if (!session) return;
-
-        // Optimistic
         setIsSaved(!isSaved);
-
         try {
             const res = await fetch(`/api/posts/${post._id}/save`, { method: 'POST' });
             if (!res.ok) {
-                setIsSaved(!isSaved); // Revert
+                setIsSaved(!isSaved);
             } else {
                 const data = await res.json();
                 setIsSaved(data.isSaved);
             }
-        } catch (error) {
-            setIsSaved(!isSaved); // Revert
+        } catch {
+            setIsSaved(!isSaved);
         }
     };
 
     const handleComment = async (e) => {
         e.preventDefault();
         if (!commentText.trim() || !session) return;
-
         const newCommentText = commentText;
-        setCommentText(''); // Clear input immediately
-
+        setCommentText('');
         try {
             const res = await fetch(`/api/posts/${post._id}/comment`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: newCommentText }),
             });
-
             if (res.ok) {
                 const updatedComments = await res.json();
                 setComments(updatedComments);
-            } else {
-                // Handle error (maybe toast)
             }
         } catch (error) {
             console.error('Failed to comment', error);
@@ -92,33 +91,47 @@ export default function PostCard({ post }) {
     };
 
     return (
-        <div className="bg-ig-black border-b border-ig-stroke mb-4 pb-4">
+        <div className="bg-ig-black border border-white/[0.06] rounded-2xl mb-4 overflow-hidden shadow-card hover:border-white/[0.1] transition-colors">
             {/* Header */}
-            <div className="flex items-center justify-between p-3">
+            <div className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-3">
                     <Link href={`/profile/${post.author?._id}`} className="block">
-                        <div className="w-8 h-8 rounded-full bg-ig-elevated overflow-hidden border border-ig-stroke relative">
-                            {post.author?.image ? (
-                                <Image src={post.author.image} alt={post.author.name} fill className="object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-xs font-bold text-ig-secondary">
-                                    {post.author?.name?.[0]?.toUpperCase()}
+                        <div className="relative w-9 h-9">
+                            <div className="absolute inset-0 rounded-full bg-ig-gradient p-[1.5px]">
+                                <div className="w-full h-full rounded-full bg-ig-black p-[1px]">
+                                    <div className="w-full h-full rounded-full bg-ig-elevated overflow-hidden relative">
+                                        {post.author?.image ? (
+                                            <Image src={post.author.image} alt={post.author.name} fill className="object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-xs font-bold text-ig-secondary">
+                                                {post.author?.name?.[0]?.toUpperCase()}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     </Link>
-                    <Link href={`/profile/${post.author?._id}`} className="text-sm font-semibold hover:underline">
-                        {post.author?.name}
-                    </Link>
-                    <span className="text-ig-secondary text-xs">• {formatDistanceToNow(new Date(post.createdAt))}</span>
+                    <div>
+                        <Link href={`/profile/${post.author?._id}`} className="text-sm font-semibold text-ig-primary hover:text-cx-blue transition-colors">
+                            {post.author?.name}
+                        </Link>
+                        <div className="text-ig-secondary text-[11px]">
+                            {formatDistanceToNow(new Date(post.createdAt))} ago
+                        </div>
+                    </div>
                 </div>
-                <button className="text-ig-primary hover:text-ig-secondary">
-                    <BsThreeDots size={20} />
+                <button className="text-ig-secondary hover:text-ig-primary transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/[0.05]">
+                    <BsThreeDots size={18} />
                 </button>
             </div>
 
-            {/* Image */}
-            <div className="relative w-full aspect-square bg-ig-elevated">
+            {/* Image with double-tap support */}
+            <div
+                className="relative w-full aspect-square bg-ig-elevated cursor-pointer"
+                onDoubleClick={handleDoubleTap}
+                onClick={handleDoubleTap}
+            >
                 {post.image ? (
                     <Image
                         src={post.image}
@@ -128,72 +141,93 @@ export default function PostCard({ post }) {
                         sizes="(max-width: 768px) 100vw, 600px"
                     />
                 ) : (
-                    <div className="flex items-center justify-center h-full text-ig-secondary">
+                    <div className="flex items-center justify-center h-full text-ig-secondary text-sm">
                         No Image
+                    </div>
+                )}
+                {post.content && !post.image && (
+                    <div className="absolute inset-0 flex items-center justify-center p-6">
+                        <p className="text-ig-primary text-center text-lg font-medium leading-relaxed">{post.content}</p>
                     </div>
                 )}
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-between px-3 py-3">
+            <div className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-4">
-                    <button onClick={handleLike} className="hover:opacity-70 transition-opacity">
-                        {isLiked ? <FaHeart size={24} className="text-ig-red" /> : <FaRegHeart size={24} />}
+                    <button
+                        onClick={handleLike}
+                        className="hover:opacity-80 transition-opacity"
+                    >
+                        {isLiked ? (
+                            <FaHeart
+                                size={26}
+                                className={`text-ig-red ${likeAnimating ? 'animate-like-pop' : ''}`}
+                            />
+                        ) : (
+                            <FaRegHeart
+                                size={26}
+                                className={`text-ig-primary ${likeAnimating ? 'animate-like-pop' : ''}`}
+                            />
+                        )}
                     </button>
-                    <button className="hover:opacity-70 transition-opacity">
-                        <FaRegComment size={24} />
+                    <button className="hover:opacity-80 transition-opacity text-ig-primary hover:text-cx-blue">
+                        <FaRegComment size={25} />
                     </button>
-                    <button className="hover:opacity-70 transition-opacity">
+                    <button className="hover:opacity-80 transition-opacity text-ig-primary hover:text-cx-blue">
                         <FaRegPaperPlane size={24} />
                     </button>
                 </div>
-                <button onClick={handleSave} className="hover:opacity-70 transition-opacity">
-                    {isSaved ? <FaBookmark size={24} /> : <FaRegBookmark size={24} />}
+                <button onClick={handleSave} className="hover:opacity-80 transition-opacity text-ig-primary">
+                    {isSaved ? <FaBookmark size={24} className="text-cx-blue" /> : <FaRegBookmark size={24} />}
                 </button>
             </div>
 
-            {/* Likes */}
-            <div className="px-3 text-sm font-semibold mb-2">
-                {likes.length} likes
+            {/* Likes count */}
+            <div className="px-4 text-sm font-semibold text-ig-primary mb-2">
+                {likes.length.toLocaleString()} {likes.length === 1 ? 'like' : 'likes'}
             </div>
 
             {/* Caption */}
-            <div className="px-3 text-sm mb-2">
-                <span className="font-semibold mr-2">{post.author?.name}</span>
-                <span className="text-ig-primary">{post.content}</span>
-            </div>
+            {post.content && (
+                <div className="px-4 text-sm mb-2">
+                    <span className="font-semibold text-ig-primary mr-2">{post.author?.name}</span>
+                    <span className="text-ig-secondary">{post.content}</span>
+                </div>
+            )}
 
-            {/* Comments List */}
-            <div className="px-3 max-h-24 overflow-y-auto mb-2 scrollbar-thin scrollbar-thumb-ig-elevated">
-                {comments.map((comment, index) => (
-                    <div key={index} className="text-sm mb-1">
-                        <span className="font-semibold mr-2">{comment.author?.username || comment.author?.name || 'User'}</span>
-                        <span className="text-ig-primary">{comment.text}</span>
-                    </div>
-                ))}
-            </div>
+            {/* Comments */}
+            {comments.length > 0 && (
+                <div className="px-4 max-h-16 overflow-y-auto mb-2 scrollbar-hide">
+                    {comments.slice(0, 3).map((comment, index) => (
+                        <div key={index} className="text-sm mb-1">
+                            <span className="font-semibold text-ig-primary mr-2">{comment.author?.username || comment.author?.name || 'User'}</span>
+                            <span className="text-ig-secondary">{comment.text}</span>
+                        </div>
+                    ))}
+                </div>
+            )}
 
-            {/* Comments Link */}
             {comments.length > 3 && (
-                <button className="px-3 text-sm text-ig-secondary mb-2 hover:text-ig-primary">
+                <button className="px-4 text-sm text-ig-secondary mb-2 hover:text-ig-primary transition-colors">
                     View all {comments.length} comments
                 </button>
             )}
 
             {/* Add Comment */}
             {session && (
-                <form onSubmit={handleComment} className="px-3 flex items-center border-t border-ig-elevated pt-3 mt-2">
+                <form onSubmit={handleComment} className="px-4 py-3 flex items-center border-t border-white/[0.04]">
                     <input
                         type="text"
                         placeholder="Add a comment..."
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
-                        className="bg-transparent text-sm w-full focus:outline-none placeholder-ig-secondary"
+                        className="bg-transparent text-sm w-full focus:outline-none placeholder-ig-secondary/60 text-ig-primary"
                     />
                     <button
                         type="submit"
                         disabled={!commentText.trim()}
-                        className="text-ig-link font-semibold text-sm disabled:opacity-50 ml-2"
+                        className="text-cx-blue font-semibold text-sm disabled:opacity-30 ml-2 hover:text-cx-purple transition-colors whitespace-nowrap"
                     >
                         Post
                     </button>

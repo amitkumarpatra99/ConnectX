@@ -1,7 +1,7 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { FaTimes } from 'react-icons/fa';
 
 export default function Stories() {
@@ -10,7 +10,7 @@ export default function Stories() {
     const [viewingStory, setViewingStory] = useState(null);
     const [currentStoryIndex, setCurrentStoryIndex] = useState(0);
     const [progress, setProgress] = useState(0);
-    const progressRef = useRef(null);
+
 
     useEffect(() => {
         const fetchStories = async () => {

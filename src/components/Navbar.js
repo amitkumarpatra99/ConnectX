@@ -31,9 +31,9 @@ export default function Navbar() {
     }, [searchQuery]);
 
     return (
-        <nav className="sticky top-0 z-50 glass-panel border-b-0 mb-8">
+        <nav className="sticky top-0 z-50 glass-dark border-b border-white/[0.06] mb-8">
             <div className="max-w-6xl mx-auto px-4 h-16 flex justify-between items-center">
-                <Link href="/" className="text-2xl font-bold metal-text hover:opacity-80 transition-opacity tracking-wide">
+                <Link href="/" className="text-2xl font-bold gradient-text hover:opacity-80 transition-opacity tracking-wide select-none">
                     ConnectX
                 </Link>
 
@@ -46,24 +46,24 @@ export default function Navbar() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             onFocus={() => setShowResults(true)}
                             onBlur={() => setTimeout(() => setShowResults(false), 200)}
-                            className="w-full px-4 py-2 bg-metal-800/50 border border-metal-600 rounded-full text-sm text-metal-100 placeholder:text-metal-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                            className="cx-input text-sm"
                         />
                         {showResults && searchResults.length > 0 && (
-                            <div className="absolute top-full mt-2 w-full bg-metal-900 border border-metal-700 rounded-xl shadow-xl overflow-hidden z-50">
+                            <div className="absolute top-full mt-2 w-full glass rounded-xl shadow-card overflow-hidden z-50">
                                 {searchResults.map((user) => (
                                     <Link
                                         key={user._id}
                                         href={`/profile/${user._id}`}
-                                        className="flex items-center gap-3 p-3 hover:bg-metal-800 transition-colors"
+                                        className="flex items-center gap-3 p-3 hover:bg-white/[0.06] transition-colors"
                                     >
-                                        <div className="w-8 h-8 rounded-full bg-metal-700 flex items-center justify-center overflow-hidden border border-metal-600">
+                                        <div className="w-8 h-8 rounded-full bg-ig-elevated flex items-center justify-center overflow-hidden border border-white/10">
                                             {user.image ? (
                                                 <img src={user.image} alt={user.username} className="w-full h-full object-cover" />
                                             ) : (
-                                                <span className="text-xs font-bold text-metal-300">{user.username[0].toUpperCase()}</span>
+                                                <span className="text-xs font-bold text-ig-secondary">{user.username[0].toUpperCase()}</span>
                                             )}
                                         </div>
-                                        <span className="text-sm font-medium text-metal-200">{user.username}</span>
+                                        <span className="text-sm font-medium text-ig-primary">{user.username}</span>
                                     </Link>
                                 ))}
                             </div>
@@ -75,7 +75,7 @@ export default function Navbar() {
                     {session ? (
                         <>
                             <li>
-                                <Link href="/create-post" className="flex items-center gap-2 text-metal-300 hover:text-white font-medium transition-colors">
+                                <Link href="/create-post" className="flex items-center gap-2 text-ig-secondary hover:text-ig-primary font-medium transition-colors">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                     </svg>
@@ -83,11 +83,11 @@ export default function Navbar() {
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/profile" className="flex items-center gap-2 text-metal-300 hover:text-white font-medium transition-colors">
+                                <Link href="/profile" className="flex items-center gap-2 text-ig-secondary hover:text-ig-primary font-medium transition-colors">
                                     {session.user?.image ? (
-                                        <img src={session.user.image} alt="Profile" className="w-8 h-8 rounded-full object-cover border border-metal-500" />
+                                        <img src={session.user.image} alt="Profile" className="w-8 h-8 rounded-full object-cover border border-white/20" />
                                     ) : (
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-metal-700 to-metal-900 border border-metal-600 flex items-center justify-center text-metal-100 text-sm font-bold shadow-inner">
+                                        <div className="w-8 h-8 rounded-full bg-cx-gradient flex items-center justify-center text-white text-sm font-bold">
                                             {session.user?.name?.[0]?.toUpperCase()}
                                         </div>
                                     )}
@@ -96,7 +96,7 @@ export default function Navbar() {
                             <li>
                                 <button
                                     onClick={() => signOut()}
-                                    className="text-sm font-medium text-red-400 hover:text-red-300 transition-colors"
+                                    className="text-sm font-medium text-ig-red hover:text-red-400 transition-colors"
                                 >
                                     Logout
                                 </button>
@@ -105,12 +105,12 @@ export default function Navbar() {
                     ) : (
                         <>
                             <li>
-                                <Link href="/login" className="text-metal-300 hover:text-white font-medium transition-colors">
+                                <Link href="/login" className="text-ig-secondary hover:text-ig-primary font-medium transition-colors">
                                     Login
                                 </Link>
                             </li>
                             <li>
-                                <Link href="/register" className="px-5 py-2 bg-gradient-to-r from-metal-700 to-metal-800 text-metal-100 border border-metal-600 rounded-full font-medium hover:from-metal-600 hover:to-metal-700 transition-all shadow-lg hover:shadow-metal">
+                                <Link href="/register" className="cx-button text-sm">
                                     Register
                                 </Link>
                             </li>

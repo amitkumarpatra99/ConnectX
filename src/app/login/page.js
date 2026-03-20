@@ -47,7 +47,7 @@ export default function LoginPage() {
                 </div>
 
                 {/* Card */}
-                <div className="glass rounded-3xl p-8 shadow-card">
+                <div className="glass rounded-3xl p-8 shadow-card relative">
                     {/* Top gradient bar */}
                     <div className="absolute top-0 left-0 w-full h-[2px] rounded-t-3xl bg-cx-gradient" />
 

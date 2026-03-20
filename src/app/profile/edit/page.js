@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { FaCamera } from 'react-icons/fa';
 
 export default function EditProfile() {
     const { data: session, status, update } = useSession();
@@ -67,15 +68,12 @@ export default function EditProfile() {
         try {
             const res = await fetch(`/api/users/${session.user.id}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
 
             if (res.ok) {
-                // Update session to reflect changes immediately if possible, or just redirect
-                await update(); // Attempt to update session
+                await update();
                 router.push('/profile');
                 router.refresh();
             } else {
@@ -92,19 +90,25 @@ export default function EditProfile() {
 
     if (loading) return (
         <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cx-blue"></div>
         </div>
     );
 
     return (
         <div className="max-w-2xl mx-auto">
-            <div className="glass-panel p-8 rounded-2xl">
-                <h1 className="text-2xl font-bold text-metal-100 mb-8 border-b border-metal-700/50 pb-4">Edit Profile</h1>
+            {/* Header */}
+            <div className="px-2 pt-2 mb-5">
+                <h1 className="text-2xl font-bold gradient-text select-none">Edit Profile</h1>
+            </div>
+
+            <div className="glass rounded-2xl p-6 relative overflow-hidden">
+                {/* Gradient top bar */}
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-cx-gradient rounded-t-2xl" />
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Profile Photo */}
-                    <div className="flex items-center gap-6 p-4 bg-metal-800/30 rounded-xl border border-metal-700/30">
-                        <div className="relative w-20 h-20 rounded-full overflow-hidden bg-metal-800 border-2 border-metal-600">
+                    <div className="flex items-center gap-6 p-4 bg-white/[0.03] rounded-xl border border-white/[0.06]">
+                        <div className="relative w-20 h-20 rounded-full overflow-hidden bg-ig-elevated border-2 border-white/10 flex-shrink-0">
                             {preview ? (
                                 <Image
                                     src={preview}
@@ -113,14 +117,15 @@ export default function EditProfile() {
                                     className="object-cover"
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-metal-400">
+                                <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-ig-secondary bg-cx-gradient">
                                     {formData.username?.[0]?.toUpperCase()}
                                 </div>
                             )}
                         </div>
                         <div>
-                            <h3 className="text-metal-100 font-medium mb-2">{formData.username}</h3>
-                            <label className="cursor-pointer text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                            <h3 className="text-ig-primary font-semibold mb-2">{formData.username}</h3>
+                            <label className="cursor-pointer flex items-center gap-2 text-cx-blue hover:text-cx-purple font-medium text-sm transition-colors">
+                                <FaCamera size={14} />
                                 Change Profile Photo
                                 <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                             </label>
@@ -129,65 +134,70 @@ export default function EditProfile() {
 
                     {/* Name */}
                     <div>
-                        <label className="block text-sm font-medium text-metal-300 mb-1">Name</label>
+                        <label className="block text-sm font-medium text-ig-secondary mb-1.5">Name</label>
                         <input
                             type="text"
                             value={formData.name}
                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                             placeholder="Name"
-                            className="w-full px-4 py-2 bg-metal-800/50 border border-metal-600 rounded-lg text-metal-100 placeholder:text-metal-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all"
+                            className="cx-input"
                         />
-                        <p className="text-xs text-metal-500 mt-1">Help people discover your account by using the name you're known by.</p>
+                        <p className="text-xs text-ig-secondary/60 mt-1">Help people discover your account by using the name you&apos;re known by.</p>
                     </div>
 
                     {/* Username */}
                     <div>
-                        <label className="block text-sm font-medium text-metal-300 mb-1">Username</label>
+                        <label className="block text-sm font-medium text-ig-secondary mb-1.5">Username</label>
                         <input
                             type="text"
                             value={formData.username}
                             onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                             placeholder="Username"
-                            className="w-full px-4 py-2 bg-metal-800/50 border border-metal-600 rounded-lg text-metal-100 placeholder:text-metal-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all"
+                            className="cx-input"
                         />
                     </div>
 
                     {/* Bio */}
                     <div>
-                        <label className="block text-sm font-medium text-metal-300 mb-1">Bio</label>
+                        <label className="block text-sm font-medium text-ig-secondary mb-1.5">Bio</label>
                         <textarea
                             value={formData.bio}
                             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                             placeholder="Write a short bio..."
                             rows={3}
                             maxLength={150}
-                            className="w-full px-4 py-2 bg-metal-800/50 border border-metal-600 rounded-lg text-metal-100 placeholder:text-metal-500 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 outline-none transition-all resize-none"
+                            className="cx-input resize-none"
                         />
-                        <div className="text-right text-xs text-metal-500 mt-1">
+                        <div className="text-right text-xs text-ig-secondary/50 mt-1">
                             {formData.bio.length} / 150
                         </div>
                     </div>
 
                     {error && (
-                        <div className="p-3 bg-red-900/20 border border-red-900/50 rounded-lg text-red-400 text-sm">
+                        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
                             {error}
                         </div>
                     )}
 
-                    <div className="flex justify-end gap-4 pt-4 border-t border-metal-700/50">
+                    <div className="flex justify-end gap-4 pt-4 border-t border-white/[0.06]">
                         <button
                             type="button"
                             onClick={() => router.back()}
-                            className="px-6 py-2 text-metal-300 hover:text-white transition-colors"
+                            className="px-6 py-2 text-ig-secondary hover:text-ig-primary transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={saving}
-                            className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-lg shadow-blue-900/20 disabled:opacity-50"
+                            className="cx-button text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {saving ? 'Saving...' : 'Submit'}
+                            {saving ? (
+                                <span className="flex items-center gap-2">
+                                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    Saving...
+                                </span>
+                            ) : 'Save Changes'}
                         </button>
                     </div>
                 </form>

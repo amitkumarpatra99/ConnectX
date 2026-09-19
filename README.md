@@ -1,4 +1,4 @@
-#  ConnectX - Social Media Platform
+#  ConnectX - Social Media Platform  🚀
 
 ![ConnectX Project Screenshot](./public/Project.png)
 
